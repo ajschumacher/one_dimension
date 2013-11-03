@@ -1,0 +1,2 @@
+"We cannot learn efficiently about nature by routinely taking the rich information in data and reducing it to a single number. Information will be lost. By contrast, visualization retains the information in the data."
+- Cleveland, Visualizing Data p. 85
