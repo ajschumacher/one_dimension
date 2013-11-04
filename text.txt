@@ -1,2 +1,121 @@
 "We cannot learn efficiently about nature by routinely taking the rich information in data and reducing it to a single number. Information will be lost. By contrast, visualization retains the information in the data."
 - Cleveland, Visualizing Data p. 85
+
+things that vary:
+ * order (preserve or not) - this is sort of another dimension...
+ * scaling across window vs. point-for-point
+ * bin or don't bin
+ * summarize to single stats or not
+ * compare to other distribution or not
+
+-2) single-number summaries
+     * mean
+     * median / other quantiles
+     * percent proficient (percent over a cutoff)
+-1) table of numbers/frequency (bin)
+ 0) list of all numbers
+ 1) plot()
+ 2) plot(sort()) (is quantile plot)
+ 3) pie chart
+ 4) histogram
+     * note when setting xlim for R hist it still bins across the whole mess
+ 5) boxplot
+ 6) KDE to density plot
+ 7) violin plot
+ 8) strip chart
+ 9) QQ normal (really a comparison)
+10) change labels to z-scores
+11) color strip histogram
+12) color strip density
+13) bx-plot
+14) beeswarm plot
+
+cumulative: very much like quantiles, eh? other ways?
+
+worth using some metaphor about an invisible entity? draping cloth over it? maybe for density plots?
+
+fun distribution example: song lengths for billboard
+http://andrewgelman.com/2013/10/05/give-me-a-ticket-for-an-aeroplane/
+
+
+http://en.wikipedia.org/wiki/Violin_plot
+http://sas-and-r.blogspot.com/2010/10/example-810-combination-dotplotboxplot.html
+http://sas-and-r.blogspot.com/2010/10/reader-suggestions-on-alternative-ways.html
+http://www.r-bloggers.com/example-8-11-violin-plots/
+http://www.statmethods.net/graphs/boxplot.html
+
+
+already linked to this once - but maybe do it again anyway? re: it *shouldn't* look like it has such-and-such a distribution
+
+What distribution does my data have? | The Endeavour
+http://www.johndcook.com/blog/2010/08/11/what-distribution-does-my-data-have/
+
+
+okay, okay, so people want to use position, yes...
+http://www.mapcite.com/posts/2013/august/the-science-behind-data-visualisation.aspx
+
+
+dp <- function(numbers) {
+  # color plotting
+  
+  # scale from white to blue
+  my.colors <- colorRampPalette(c("white", "blue"))(100)
+  
+  image(x=1:length(numbers), z=matrix(numbers), col=my.colors, axes=F, breaks=seq(0, max(numbers), length.out=101), xlab="")
+  # 'breaks' are breaks on the color (z) scale
+  
+  axis(1, at=1:length(numbers)) # draw the X axis after all
+
+  return(numbers)
+}
+
+#dp(rbinom(10,3,0.5))
+
+d <- matrix(1:12,nrow=4,byrow=T)
+image(t(d[4:1,]),col=my.colors)
+
+# Okay, want to make a matrix which has days-in-IDES as the columns
+# and days as the rows (today is the top row, yesterday is the second row, and so on)
+
+count_at_day <- function(day) {
+  sum(d(enchilada$m_ref_dx) <= d(day) & (d(day) <= d(enchilada$vben_dx) | enchilada$vben_dx==''), na.rm=T)
+}
+
+count_at_day_count <- function(day, count) {
+  sum(d(enchilada$m_ref_dx) <= d(day) & (d(day) <= d(enchilada$vben_dx) | enchilada$vben_dx=='') & d(day) - d(enchilada$m_ref_dx) == count, na.rm=T)
+}
+
+day_counts <- matrix(NA, )
+
+
+cist <- function(numbers, breaks=30) {
+  # color plotting
+  
+  # for comparison
+  hist(numbers, breaks=breaks, right=FALSE)
+  
+  # bin
+  bin.bounds <- seq(min(numbers), max(numbers), length.out=breaks)
+  bin.bounds[breaks] <- bin.bounds[breaks] + 1
+  bin.counts <- sapply(1:breaks, function(x){ sum(bin.bounds[x] <= numbers & numbers < bin.bounds[x+1]) })
+  # hack to see result
+  numbers <- bin.counts
+  
+  # scale from white to blue
+  my.colors <- colorRampPalette(c("white", "blue"))(500)
+  
+  image(x=1:length(numbers), z=matrix(numbers), col=my.colors, axes=F, breaks=seq(0, max(numbers), length.out=501), xlab="")
+  # 'breaks' are breaks on the color (z) scale
+  
+  axis(1, at=1:length(numbers)) # draw the X axis after all
+  
+  print(bin.bounds)
+  return(numbers)
+}
+
+cist(rnorm(1e6), 30)
+cist(runif(1e6), 30)
+cist(rbinom(1e6, 5, 0.5), 30)
+cist(rbinom(1e6, 5, 0.8), 30)
+cist(rbinom(1e6, 100, 0.8), 30) # ah; bad binning around integer values; sometimes including one, sometimes two integers
+cist(rbinom(1e6, 100, 0.8), 100)
